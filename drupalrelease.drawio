@@ -1,0 +1,43 @@
+<mxfile host="Electron" modified="2023-10-08T09:20:08.827Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.7.5 Chrome/114.0.5735.289 Electron/25.8.1 Safari/537.36" etag="ugp39cuwEavzBH_3-fvr" version="21.7.5" type="device">
+  <diagram name="Page-1" id="8ngW9oeQaqFLsuMIDDjF">
+    <mxGraphModel dx="1414" dy="847" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="vDqkfkm0NsfimYqcPVhM-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="279" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="vDqkfkm0NsfimYqcPVhM-1" target="vDqkfkm0NsfimYqcPVhM-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-1" value="DrupalReleaseFunction" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#ED7100;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.lambda_function;" vertex="1" parent="1">
+          <mxGeometry x="188" y="246.5" width="65" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="vDqkfkm0NsfimYqcPVhM-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="269" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-2" value="DrupalReleaseAlarm" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.alarm;" vertex="1" parent="1">
+          <mxGeometry x="375" y="230" width="78" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-5" value="DrupalReleaseLogGroup" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.cloudwatch_logs;" vertex="1" parent="1">
+          <mxGeometry x="181.5" y="90" width="78" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-6" value="DrupalReleaseTopic" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sns;" vertex="1" parent="1">
+          <mxGeometry x="540" y="240" width="78" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="vDqkfkm0NsfimYqcPVhM-13">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="180" y="279" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vDqkfkm0NsfimYqcPVhM-13" value="Daily event" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.event_time_based;" vertex="1" parent="1">
+          <mxGeometry x="30" y="240" width="78" height="78" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
