@@ -1,0 +1,96 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Get Drupal security releases
+
+Globals:
+  Function:
+    Timeout: 600
+
+Resources:
+  DrupalaReleaseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      MemorySize: 128
+      Environment:
+        Variables:
+          DRUPAL_MAJOR_VERSION: 9
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+      Events:
+        ScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 7 * * ? *)
+      EventInvokeConfig:
+        MaximumRetryAttempts: 0
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaVPCAccessExecutionRole
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'cloudwatch:PutMetricData'
+              Resource: '*'
+              Condition:
+                StringEquals:
+                    'cloudwatch:namespace': SonarqubeStats
+            - Effect: Allow
+              Action:
+               - 'ssm:Get*'
+               - 'ssm:List*'
+               - 'ssm:Describe*'
+              Resource: '*'
+            - Effect: Allow
+              Action: 'kms:Decrypt'
+              Resource: '*'
+
+  DrupalReleasesLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 30
+      LogGroupName: !Sub "/aws/lambda/${DrupalaReleaseFunction}"
+
+  DrupalReleaseAlertingTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: DrupalReleaseAlertingTopic
+      TopicName: "DrupalReleaseAlertingTopic"
+
+  DrupalReleaseAlertingTarget:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: kristof.willen@engie.com
+      Protocol: email
+      TopicArn: !Ref 'DrupalReleaseAlertingTopic'
+
+  DrupalReleasedMonitoringAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "DrupalReleaseAlarm"
+      AlarmDescription: Trigger an alarm when the execution of the monitor function fails.
+      Namespace: AWS/Lambda
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref DrupalaReleaseFunction
+      MetricName: Errors
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: ignore
+      Threshold: 0
+      AlarmActions:
+        - !Ref DrupalReleaseAlertingTopic
+      OKActions:
+        - !Ref DrupalReleaseAlertingTopic
