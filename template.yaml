@@ -1,3 +1,4 @@
+---
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Get Drupal security releases
@@ -17,6 +18,7 @@ Resources:
       Environment:
         Variables:
           DRUPAL_MAJOR_VERSION: 9
+          DRUPAL_TOPIC_ARN: !Ref DrupalReleaseSNSTopic
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -44,22 +46,21 @@ Resources:
               Resource: '*'
               Condition:
                 StringEquals:
-                    'cloudwatch:namespace': SonarqubeStats
+                    'cloudwatch:namespace': DrupalReleaseStats
             - Effect: Allow
               Action:
-               - 'ssm:Get*'
-               - 'ssm:List*'
-               - 'ssm:Describe*'
-              Resource: '*'
+               - 'sns:Publish'
+              Resource: !Ref DrupalReleaseAlertingTopic
             - Effect: Allow
-              Action: 'kms:Decrypt'
-              Resource: '*'
+              Action:
+                - 'ssm:GetParameter'
+                - 'ssm:PutParameter'
 
   DrupalReleasesLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       RetentionInDays: 30
-      LogGroupName: !Sub "/aws/lambda/${DrupalaReleaseFunction}"
+      LogGroupName: !Sub "/aws/lambda/${DrupalReleaseFunction}"
 
   DrupalReleaseAlertingTopic:
     Type: AWS::SNS::Topic
@@ -94,3 +95,10 @@ Resources:
         - !Ref DrupalReleaseAlertingTopic
       OKActions:
         - !Ref DrupalReleaseAlertingTopic
+
+  DrupalReleaseParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      DataType: text
+      Name: DrupalVersionSecurityFix
+      Value: "0.0.0"
