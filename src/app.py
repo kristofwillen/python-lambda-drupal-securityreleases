@@ -46,12 +46,13 @@ def lambda_handler(event, context):
         ssm = boto3.client('ssm')
         resp = ssm.get_parameter(Name='DrupalVersionSecurityFix')
         latest_security_release = resp['Parameter']['Value']
+        #print(release_security, latest_security_release)
         if release_security != latest_security_release:
             print('[WARN] New Drupal security version, sending out alert...')
             # Send out an alert, we have a new Drupal version fixing a secvuln
             sns = boto3.client('sns')
             resp = sns.publish(
-                TopicArn=os.environ['DrupalReleaseAlertingTopic'],
+                TopicArn=drupal_topic_arn,
                 Message=f"Your current Drupal version has some security vulnerabilities. Please upgrade to {release_security}"
             )
 
@@ -62,6 +63,10 @@ def lambda_handler(event, context):
                 Value=release_security,
                 Overwrite=True
             )
+        else:
+            print(f'[SKIP] Already sent out alert for this release => {release_security}')
+    else:
+        print('[ Ok ] No vulnerabilities found')
 
     return {
         "statusCode": 200,

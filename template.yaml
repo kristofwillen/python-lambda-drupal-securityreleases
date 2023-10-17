@@ -8,7 +8,7 @@ Globals:
     Timeout: 600
 
 Resources:
-  DrupalaReleaseFunction:
+  DrupalReleaseFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/
@@ -18,16 +18,16 @@ Resources:
       Environment:
         Variables:
           DRUPAL_MAJOR_VERSION: 9
-          DRUPAL_TOPIC_ARN: !Ref DrupalReleaseSNSTopic
+          DRUPAL_TOPIC_ARN: !Ref DrupalReleaseAlertingTopic
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-        - Action:
-          - sts:AssumeRole
-          Effect: Allow
-          Principal:
-            Service:
-            - lambda.amazonaws.com
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
       Events:
         ScheduleEvent:
           Type: Schedule
@@ -46,15 +46,16 @@ Resources:
               Resource: '*'
               Condition:
                 StringEquals:
-                    'cloudwatch:namespace': DrupalReleaseStats
+                  'cloudwatch:namespace': DrupalReleaseStats
             - Effect: Allow
               Action:
-               - 'sns:Publish'
+                - 'sns:Publish'
               Resource: !Ref DrupalReleaseAlertingTopic
             - Effect: Allow
               Action:
                 - 'ssm:GetParameter'
                 - 'ssm:PutParameter'
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:*:parameter/${DrupalReleaseParameter}"
 
   DrupalReleasesLogGroup:
     Type: AWS::Logs::LogGroup
@@ -71,19 +72,19 @@ Resources:
   DrupalReleaseAlertingTarget:
     Type: AWS::SNS::Subscription
     Properties:
-      Endpoint: kristof.willen@engie.com
+      Endpoint: kristof.willen@gmail.com
       Protocol: email
       TopicArn: !Ref 'DrupalReleaseAlertingTopic'
 
   DrupalReleasedMonitoringAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmName: !Sub "DrupalReleaseAlarm"
+      AlarmName: "DrupalReleaseAlarm"
       AlarmDescription: Trigger an alarm when the execution of the monitor function fails.
       Namespace: AWS/Lambda
       Dimensions:
         - Name: FunctionName
-          Value: !Ref DrupalaReleaseFunction
+          Value: !Ref DrupalReleaseFunction
       MetricName: Errors
       Statistic: Maximum
       Period: 3600
@@ -100,5 +101,6 @@ Resources:
     Type: AWS::SSM::Parameter
     Properties:
       DataType: text
+      Type: String
       Name: DrupalVersionSecurityFix
       Value: "0.0.0"
