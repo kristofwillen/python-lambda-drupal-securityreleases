@@ -5,9 +5,12 @@ name = "pypi"
 
 [packages]
 requests = "*"
+ipykernel = "*"
+boto3 = "*"
 
 [dev-packages]
 bandit = "*"
+ipykernel = "*"
 
 [requires]
 python_version = "3.11"

@@ -3,6 +3,7 @@ import re
 import os
 import boto3
 import requests
+from datetime import datetime, timezone
 import xml.etree.ElementTree as ET
 
 drupal_major_version = os.getenv('DRUPAL_MAJOR_VERSION')
@@ -63,10 +64,43 @@ def lambda_handler(event, context):
                 Value=release_security,
                 Overwrite=True
             )
+
         else:
             print(f'[SKIP] Already sent out alert for this release => {release_security}')
     else:
         print('[ Ok ] No vulnerabilities found')
+
+    # TODO - add version to Cloudwatch metrics
+    drupal_version = release_security.split(' ')[1]
+    major = drupal_version.split('.')[0]
+    minor = drupal_version.split('.')[1].rjust(2,'0')
+    patch = drupal_version.split('.')[2].rjust(3,'0')
+    drupal_metric = f"{major}{minor}{patch}"
+    drupal_current_version = os.getenv('DRUPAL_CURRENT_VERSION')
+
+    print(f'[INFO] Writing metrics {drupal_metric} to Cloudwatch...')
+    cw = boto3.client('cloudwatch')
+    utc_now = datetime.now(tz=timezone.utc)
+    try:
+        resp = cw.put_metric_data(
+            Namespace='DrupalReleaseStats',
+            MetricData=[
+                {
+                    "MetricName": "drupalcurrentversion",
+                    "Timestamp": utc_now,
+                    "Value": int(drupal_current_version),
+                    "Unit": "Count",
+                },
+                {
+                    "MetricName": "drupalsecurityversion",
+                    "Timestamp": utc_now,
+                    "Value": int(drupal_metric),
+                    "Unit": "Count",
+                }
+            ],
+        )
+    except Exception as e:
+        print(f'[FAIL] Cannot write data to Cloudwatch => {e}')
 
     return {
         "statusCode": 200,

@@ -19,6 +19,7 @@ Resources:
         Variables:
           DRUPAL_MAJOR_VERSION: 9
           DRUPAL_TOPIC_ARN: !Ref DrupalReleaseAlertingTopic
+          DRUPAL_CURRENT_VERSION: 905011
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -42,7 +43,9 @@ Resources:
         - Version: '2012-10-17'
           Statement:
             - Effect: Allow
-              Action: 'cloudwatch:PutMetricData'
+              Action:
+                - 'cloudwatch:PutMetricData'
+                - 'cloudwatch:GetMetricData'
               Resource: '*'
               Condition:
                 StringEquals:
