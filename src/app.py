@@ -9,6 +9,14 @@ import xml.etree.ElementTree as ET
 drupal_major_version = os.getenv('DRUPAL_MAJOR_VERSION')
 drupal_topic_arn = os.getenv('DRUPAL_TOPIC_ARN')
 
+def get_version_nr(releasestring: str) -> int:
+    drupal_version = releasestring.split(' ')[1]
+    major = drupal_version.split('.')[0]
+    minor = drupal_version.split('.')[1].rjust(2,'0')
+    patch = drupal_version.split('.')[2].rjust(3,'0')
+
+    return int(f"{major}{minor}{patch}")
+
 def lambda_handler(event, context):
 
     print('[INFO] Getting Drupal security feed...')
@@ -24,7 +32,8 @@ def lambda_handler(event, context):
     found_vulnerability = False
     item_is_current_drupalversion = False
     release = "0.0.0"
-    release_security = release
+    latest_release = release
+    highest_version = 0
 
     print('[INFO] Checking new versions on security updates...')
     for item in root.findall('./channel/item'):
@@ -40,42 +49,39 @@ def lambda_handler(event, context):
                 if len(re.findall('security vulnerabilit', descr)) > 0:
                     print(f"[ Ok ] {release} fixes security vulnerabilities!")
                     found_vulnerability = True
-                    release_security = release
-
+                    if get_version_nr(release) > highest_version:
+                        highest_version = get_version_nr(release)
+                        latest_release = release
     if found_vulnerability:
         print('[INFO] We found a new Drupal security release.  Lets see if this version is known to us...')
         ssm = boto3.client('ssm')
         resp = ssm.get_parameter(Name='DrupalVersionSecurityFix')
         latest_security_release = resp['Parameter']['Value']
         #print(release_security, latest_security_release)
-        if release_security != latest_security_release:
+        if highest_version != int(latest_security_release):
             print('[WARN] New Drupal security version, sending out alert...')
             # Send out an alert, we have a new Drupal version fixing a secvuln
             sns = boto3.client('sns')
             resp = sns.publish(
                 TopicArn=drupal_topic_arn,
-                Message=f"Your current Drupal version has some security vulnerabilities. Please upgrade to {release_security}"
+                Message=f"Your current Drupal version has some security vulnerabilities. Please upgrade to {release}"
             )
 
             # update the SSM parameter with the new release
             print('[INFO] Updating the SSM parameter with the latest security release')
             resp = ssm.put_parameter(
                 Name='DrupalVersionSecurityFix',
-                Value=release_security,
+                Value=str(highest_version),
                 Overwrite=True
             )
 
         else:
-            print(f'[SKIP] Already sent out alert for this release => {release_security}')
+            print(f'[SKIP] Already sent out alert for this release => {highest_version}')
     else:
         print('[ Ok ] No vulnerabilities found')
 
     # TODO - add version to Cloudwatch metrics
-    drupal_version = release_security.split(' ')[1]
-    major = drupal_version.split('.')[0]
-    minor = drupal_version.split('.')[1].rjust(2,'0')
-    patch = drupal_version.split('.')[2].rjust(3,'0')
-    drupal_metric = f"{major}{minor}{patch}"
+    drupal_metric = str(highest_version)
     drupal_current_version = os.getenv('DRUPAL_CURRENT_VERSION')
 
     print(f'[INFO] Writing metrics {drupal_metric} to Cloudwatch...')
