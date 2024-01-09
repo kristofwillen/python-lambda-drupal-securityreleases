@@ -71,7 +71,8 @@ def lambda_handler(event, context):
         print('[ Ok ] No vulnerabilities found')
 
     # TODO - add version to Cloudwatch metrics
-    drupal_version = release_security.split(' ')[1]
+    #drupal_version = release_security.split(' ')[1]
+    drupal_version = release_security
     major = drupal_version.split('.')[0]
     minor = drupal_version.split('.')[1].rjust(2,'0')
     patch = drupal_version.split('.')[2].rjust(3,'0')
