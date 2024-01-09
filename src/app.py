@@ -12,7 +12,7 @@ drupal_topic_arn = os.getenv('DRUPAL_TOPIC_ARN')
 def lambda_handler(event, context):
 
     print('[INFO] Getting Drupal security feed...')
-    url = 'https://www.drupal.org/node/3060/release/feed'
+    url = 'https://www.drupal.org/node/3060/release/feed?version=9'
     resp = requests.get(url, timeout=20)
 
     with open('/tmp/feed.xml', 'wb') as f:
@@ -71,8 +71,7 @@ def lambda_handler(event, context):
         print('[ Ok ] No vulnerabilities found')
 
     # TODO - add version to Cloudwatch metrics
-    #drupal_version = release_security.split(' ')[1]
-    drupal_version = release_security
+    drupal_version = release_security.split(' ')[1]
     major = drupal_version.split('.')[0]
     minor = drupal_version.split('.')[1].rjust(2,'0')
     patch = drupal_version.split('.')[2].rjust(3,'0')
