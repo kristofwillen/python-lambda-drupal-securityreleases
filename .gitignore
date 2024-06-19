@@ -5,7 +5,10 @@
 *~
 .aws-sam/
 .venv/
-
+.vscode/
+tests/
+events/
+Pipfile.lock
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 

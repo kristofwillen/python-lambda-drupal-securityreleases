@@ -17,9 +17,9 @@ Resources:
       MemorySize: 128
       Environment:
         Variables:
-          DRUPAL_MAJOR_VERSION: 9
+          DRUPAL_MAJOR_VERSION: 10
           DRUPAL_TOPIC_ARN: !Ref DrupalReleaseAlertingTopic
-          DRUPAL_CURRENT_VERSION: 905011
+          DRUPAL_CURRENT_VERSION: 1002070
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
