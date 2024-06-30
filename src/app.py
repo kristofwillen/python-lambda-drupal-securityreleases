@@ -20,7 +20,7 @@ def get_version_nr(releasestring: str) -> int:
 def lambda_handler(event, context):
 
     print('[INFO] Getting Drupal security feed...')
-    url = 'https://www.drupal.org/node/3060/release/feed?version=9'
+    url = f'https://www.drupal.org/node/3060/release/feed?version={drupal_major_version}'
     resp = requests.get(url, timeout=20)
 
     with open('/tmp/feed.xml', 'wb') as f:
@@ -52,6 +52,8 @@ def lambda_handler(event, context):
                     if get_version_nr(release) > highest_version:
                         highest_version = get_version_nr(release)
                         latest_release = release
+                else:
+                    print(release, 'is no security release')
     if found_vulnerability:
         print('[INFO] We found a new Drupal security release.  Lets see if this version is known to us...')
         ssm = boto3.client('ssm')
@@ -71,14 +73,7 @@ def lambda_handler(event, context):
             print('[INFO] Updating the SSM parameter with the latest security release')
             resp = ssm.put_parameter(
                 Name='DrupalVersionSecurityFix',
-                Value=str(highest_version),
-                Overwrite=True
-            )
-
-        else:
-            print(f'[SKIP] Already sent out alert for this release => {highest_version}')
-    else:
-        print('[ Ok ] No vulnerabilities found')
+                Value=str(highest_version),959463790688
 
     # TODO - add version to Cloudwatch metrics
     drupal_metric = str(highest_version)
