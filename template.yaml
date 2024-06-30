@@ -19,7 +19,7 @@ Resources:
         Variables:
           DRUPAL_MAJOR_VERSION: 10
           DRUPAL_TOPIC_ARN: !Ref DrupalReleaseAlertingTopic
-          DRUPAL_CURRENT_VERSION: 1002070
+          DRUPAL_CURRENT_VERSION: 1003000
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
